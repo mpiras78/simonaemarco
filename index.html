@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Simona &amp; Marco | Partecipazione di Nozze</title>
+
+<!-- Font eleganti: un serif per i testi, uno script per i nomi -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@400;500;600&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Audio di sottofondo -->
+<audio id="bgMusic" autoplay loop>
+  <source src="audio/Ti_sposero_perche.mp3" type="audio/mpeg">
+  <source src="audio/Ti_sposero_perche.wav" type="audio/wav">
+  Il tuo browser non supporta l'elemento audio.
+</audio>
+
+<!-- Pulsante controllo audio -->
+<button id="audioToggle" class="audio-toggle" aria-label="Attiva/disattiva musica" title="Attiva/disattiva musica">
+  <svg class="audio-icon audio-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <!-- Speaker on -->
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+    <path d="M15.54 5.47A9 9 0 0 1 19 12a9 9 0 0 1-3.46 6.53"></path>
+    <path d="M19.07 4.93A10 10 0 0 1 23 12a10 10 0 0 1-3.93 7.07"></path>
+  </svg>
+  <svg class="audio-icon audio-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <!-- Speaker off -->
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+    <line x1="23" y1="9" x2="17" y2="15"></line>
+    <line x1="17" y1="9" x2="23" y2="15"></line>
+  </svg>
+</button>
+
+<!-- =========================================================
+     SCHERMATA 1 - BUSTA DA LETTERA (invito iniziale)
+========================================================= -->
+<div id="envelope-screen" class="envelope-screen">
+  <!-- Video di apertura della busta (nascosto inizialmente) -->
+  <video id="openingVideo" class="opening-video" muted playsinline>
+    <source src="images/apertura_lettera.mp4" type="video/mp4">
+    Il tuo browser non supporta il tag video.
+  </video>
+
+  <!-- Overlay con nomi e pulsante -->
+  <div class="envelope-overlay">
+    <div class="envelope-names">
+      <span class="amp">Simona &amp; Marco</span>
+    </div>
+
+    <button id="openButton" class="open-button">
+      <span>Tocca per aprire</span>
+    </button>
+  </div>
+</div>
+
+<!-- =========================================================
+     SCHERMATA 2 - SITO SINGLE PAGE
+========================================================= -->
+<div id="main-site" class="main-site">
+
+  <!-- ============ SEZIONE 1: HERO / COUNTDOWN ============ -->
+  <section id="hero" class="section hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content" data-aos>
+      <p class="hero-kicker"></p>
+      <h1 class="hero-names">Simona<br><span class="amp-small">&amp;</span><br>Marco</h1>
+      <p class="hero-date">04 Luglio 2027</p>
+
+      <div class="countdown" id="countdown">
+        <div class="countdown-item">
+          <span class="countdown-number" id="cd-days">00</span>
+          <span class="countdown-label">Giorni</span>
+        </div>
+        <div class="countdown-item">
+          <span class="countdown-number" id="cd-hours">00</span>
+          <span class="countdown-label">Ore</span>
+        </div>
+        <div class="countdown-item">
+          <span class="countdown-number" id="cd-minutes">00</span>
+          <span class="countdown-label">Minuti</span>
+        </div>
+        <div class="countdown-item">
+          <span class="countdown-number" id="cd-seconds">00</span>
+          <span class="countdown-label">Secondi</span>
+        </div>
+      </div>
+      <div class="scroll-hint">&#8595;</div>
+    </div>
+  </section>
+
+  <!-- ============ SEZIONE 2: INVITO ============ -->
+  <section id="invito" class="section invito-section">
+    <div class="ornament-top">&#10086;</div>
+    <h2 class="section-title">Il nostro invito</h2>
+    <div class="divider"></div>
+
+    <div class="invito-grid">
+      <div class="invito-photo">
+        <!-- Foto della coppia: modifica --couple-photo in style.css -->
+      </div>
+
+      <div class="invito-text">
+        <p>
+          Con immensa gioia nel cuore, vi invitiamo a condividere con noi
+          il giorno più importante della nostra vita.
+        </p>
+        <p>
+          Dopo tanto tempo insieme, abbiamo deciso di unire per sempre
+          i nostri destini, e non c'è festa più bella di quella
+          circondata dall'affetto delle persone che amiamo.
+        </p>
+        <p class="invito-signature">Simona &amp; Marco</p>
+
+        <div class="glasses-icon">
+          <img src="images/calici.jpg" alt="Calici di champagne" class="calici-image">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SEZIONE 3: DOVE E QUANDO ============ -->
+  <section id="dove-quando" class="section location-section">
+    <div class="ornament-top">&#10086;</div>
+    <h2 class="section-title">Dove e quando</h2>
+    <div class="divider"></div>
+
+    <div class="location-illustration" aria-hidden="true">
+      <svg viewBox="0 0 400 220" class="farmhouse-svg">
+        <!-- cielo -->
+        <rect x="0" y="0" width="400" height="220" fill="none"/>
+        <!-- sole -->
+        <circle cx="340" cy="40" r="22" fill="#e8c988" opacity="0.85"/>
+        <!-- colline -->
+        <path d="M0,150 Q100,110 200,145 T400,130 V220 H0 Z" fill="#95a978" opacity="0.55"/>
+        <path d="M0,175 Q120,150 220,175 T400,165 V220 H0 Z" fill="#7c9463" opacity="0.7"/>
+        <!-- casa agriturismo -->
+        <g transform="translate(150,90)">
+          <polygon points="50,0 0,45 100,45" fill="#a9673f"/>
+          <rect x="8" y="45" width="84" height="60" fill="#e9dcc3"/>
+          <rect x="20" y="65" width="18" height="18" fill="#7c9463"/>
+          <rect x="62" y="65" width="18" height="18" fill="#7c9463"/>
+          <rect x="42" y="75" width="16" height="30" fill="#6b4a33"/>
+          <rect x="46" y="15" width="10" height="20" fill="#6b4a33"/>
+        </g>
+        <!-- alberi -->
+        <g transform="translate(60,120)">
+          <rect x="8" y="35" width="6" height="20" fill="#6b4a33"/>
+          <circle cx="11" cy="25" r="20" fill="#5f7a4a"/>
+        </g>
+        <g transform="translate(290,130)">
+          <rect x="8" y="30" width="6" height="18" fill="#6b4a33"/>
+          <circle cx="11" cy="22" r="17" fill="#5f7a4a"/>
+        </g>
+        <g transform="translate(320,110)">
+          <rect x="8" y="35" width="6" height="22" fill="#6b4a33"/>
+          <circle cx="11" cy="24" r="19" fill="#5f7a4a"/>
+        </g>
+      </svg>
+    </div>
+
+    <p class="location-name">Agriturismo Le Giuggiole</p>
+    <p class="location-date">04 Luglio 2027 &middot; ore 17:30</p>
+    <p class="location-address">Via della Fontana Corvia, 80 &ndash; 00132 Roma (RM)</p>
+
+    <div class="map-wrapper">
+      <iframe
+        class="map-frame"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2971.6967653080633!2d12.699767476458282!3d41.85635326677508!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x132f7de54f73e44d%3A0x6ff5ad7c706cb022!2sAgriturismo%20-%20Casale%20le%20Giuggiole!5e0!3m2!1sit!2sus!4v1787957095347!5m2!1sit!2sus"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+
+    <a class="btn-outline"
+       href="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2971.6967653080633!2d12.699767476458282!3d41.85635326677508!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x132f7de54f73e44d%3A0x6ff5ad7c706cb022!2sAgriturismo%20-%20Casale%20le%20Giuggiole!5e0!3m2!1sit!2sus!4v1787957095347!5m2!1sit!2sus"
+       target="_blank" rel="noopener">
+      Apri in Google Maps
+    </a>
+  </section>
+
+  <!-- ============ SEZIONE 4: RSVP ============ -->
+  <section id="rsvp" class="section rsvp-section">
+    <div class="ornament-top">&#10086;</div>
+    <h2 class="section-title">Sarete con noi?</h2>
+    <p class="rsvp-subtitle">Vi aspettiamo</p>
+    <div class="divider"></div>
+
+    <div class="letter-card">
+      <p>
+        Saremo felici di avervi con noi nel nostro giorno speciale.
+        Vi preghiamo di confermare la vostra presenza.
+      </p>
+      <button id="openRsvpForm" class="btn-solid">Conferma la tua presenza</button>
+    </div>
+
+    <footer class="site-footer">
+      <p>Simona &amp; Marco &middot; 04.07.2027</p>
+    </footer>
+  </section>
+
+</div>
+
+<!-- =========================================================
+     MODALE FORM RSVP (a tutto schermo)
+========================================================= -->
+<div id="rsvpModal" class="rsvp-modal">
+  <div class="rsvp-modal-inner">
+    <button id="closeRsvpForm" class="rsvp-close" aria-label="Chiudi">&times;</button>
+
+    <h2 class="rsvp-modal-title">Conferma la tua presenza</h2>
+    <div class="divider divider-light"></div>
+
+    <form id="rsvpForm" class="rsvp-form" novalidate>
+
+      <div class="form-row">
+        <label for="fullname">Nome e Cognome *</label>
+        <input type="text" id="fullname" name="fullname" required placeholder="Es. Mario Rossi">
+      </div>
+
+      <div class="form-row form-row-split">
+        <div>
+          <label for="guests">Quanti sarete in totale? *</label>
+          <input type="number" id="guests" name="guests" min="1" max="20" required placeholder="Es. 2">
+        </div>
+        <div>
+          <label for="children">Di cui bambini</label>
+          <input type="number" id="children" name="children" min="0" max="20" placeholder="0">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>Parteciperete? *</label>
+        <div class="choice-group" id="attendanceGroup">
+          <button type="button" class="choice-btn" data-value="partecipo">Partecipo</button>
+          <button type="button" class="choice-btn" data-value="non_partecipo">Non partecipo</button>
+          <button type="button" class="choice-btn" data-value="forse">Ancora non posso confermare</button>
+        </div>
+        <input type="hidden" id="attendance" name="attendance" required>
+      </div>
+
+      <div class="form-row">
+        <label>Restrizioni alimentari</label>
+        <div class="checkbox-group">
+          <label class="checkbox-pill">
+            <input type="checkbox" name="diet[]" value="vegetariano"> Vegetariano
+          </label>
+          <label class="checkbox-pill">
+            <input type="checkbox" name="diet[]" value="vegano"> Vegano
+          </label>
+          <label class="checkbox-pill">
+            <input type="checkbox" name="diet[]" value="senza_glutine"> Senza glutine
+          </label>
+          <label class="checkbox-pill">
+            <input type="checkbox" name="diet[]" value="senza_lattosio"> Senza lattosio
+          </label>
+        </div>
+        <input type="text" id="allergie" name="allergie" placeholder="Altre allergie o intolleranze (facoltativo)">
+      </div>
+
+      <div class="form-row">
+        <label for="message">Un messaggio per gli sposi</label>
+        <textarea id="message" name="message" rows="4" placeholder="Scrivete qui il vostro messaggio..."></textarea>
+      </div>
+
+      <div class="form-feedback" id="formFeedback"></div>
+
+      <button type="submit" class="btn-solid btn-submit" id="submitBtn">Invia conferma</button>
+    </form>
+  </div>
+</div>
+
+<script src="js/script.js"></script>
+</body>
+</html>

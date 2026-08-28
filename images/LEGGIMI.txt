@@ -1,0 +1,22 @@
+Questa cartella deve contenere le foto reali da usare nel sito.
+Al momento il sito funziona anche senza queste immagini (mostra uno sfondo
+colore neutro al loro posto), ma per il risultato finale aggiungi:
+
+1) hero-bg.jpg
+   - Foto di sfondo della prima sezione (dopo l'apertura della busta),
+     quella con i nomi grandi e il countdown.
+   - Consigliata: foto orizzontale, luminosa, risoluzione almeno 1920x1080.
+
+2) coppia.jpg
+   - Foto della coppia usata nella sezione "Il nostro invito".
+   - Consigliata: foto verticale (formato ritratto), circa 800x1000.
+
+Come cambiarle:
+- Basta sostituire i file con lo stesso nome, oppure
+- Cambiare il percorso nelle variabili CSS in css/style.css:
+    --img-hero-bg: url('../images/hero-bg.jpg');
+    --img-couple-photo: url('../images/coppia.jpg');
+
+Tutto il resto della grafica (busta, ceralacca, calici, agriturismo) è
+disegnato con CSS/SVG, quindi non richiede immagini esterne ed è già
+elegante e leggero da caricare su qualsiasi hosting.

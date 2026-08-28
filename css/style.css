@@ -1,0 +1,614 @@
+/* =====================================================================
+   PARTECIPAZIONE DI NOZZE — Simona & Marco
+   Tutto lo stile e le immagini si gestiscono da qui.
+   Modifica le variabili in :root per cambiare colori, font e immagini
+   senza toccare l'HTML.
+===================================================================== */
+
+:root {
+  /* ---- COLORI ---- */
+  --color-primary: #8a6d3b;        /* oro/bronzo elegante */
+  --color-primary-dark: #5c4a26;
+  --color-cream: #faf6ee;          /* crema/avorio */
+  --color-cream-dark: #f1e9d8;
+  --color-text: #4a4139;
+  --color-text-light: #7c7167;
+  --color-white: #ffffff;
+  --color-green-dark: #3f4f36;     /* verde agriturismo */
+
+  /* ---- FONT ---- */
+  --font-script: 'Great Vibes', cursive;      /* nomi in stile calligrafico */
+  --font-serif: 'Cormorant Garamond', serif;  /* testi */
+  --font-title: 'Cinzel', serif;              /* titoli maiuscoli */
+
+  /* ---- IMMAGINI (sostituisci i percorsi con le tue foto) ---- */
+  --img-hero-bg: url('../images/sfondo_married.jpg');
+  --img-couple-photo: url('../images/IMG_20251025_190413.jpeg');
+
+  /* ---- ALTRO ---- */
+  --transition-slow: 1.1s cubic-bezier(.65,0,.35,1);
+  --max-width: 900px;
+}
+
+/* ---------------------------------------------------------------------
+   RESET & BASE
+--------------------------------------------------------------------- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-serif);
+  color: var(--color-text);
+  background: var(--color-cream);
+  overflow-x: hidden;
+}
+
+h1, h2 { font-family: var(--font-title); font-weight: 600; letter-spacing: 2px; }
+
+button { font-family: inherit; cursor: pointer; }
+
+.section-title {
+  text-align: center;
+  font-size: 2rem;
+  color: var(--color-primary-dark);
+  text-transform: uppercase;
+  letter-spacing: 4px;
+}
+
+.divider {
+  width: 70px;
+  height: 2px;
+  background: var(--color-primary);
+  margin: 18px auto 36px;
+  position: relative;
+}
+.divider::before {
+  content: '\2726';
+  position: absolute;
+  top: -10px; left: 50%;
+  transform: translateX(-50%);
+  color: var(--color-primary);
+  background: inherit;
+  font-size: .9rem;
+}
+.divider-light { background: rgba(255,255,255,.5); }
+.divider-light::before { color: var(--color-cream); }
+
+.ornament-top {
+  text-align: center;
+  color: var(--color-primary);
+  font-size: 1.4rem;
+  margin-bottom: 6px;
+}
+
+.amp, .amp-small { font-family: var(--font-script); color: var(--color-primary); }
+
+/* =====================================================================
+   CONTROLLO AUDIO
+===================================================================== */
+#bgMusic {
+  display: none;
+}
+
+.audio-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid var(--color-primary);
+  background: var(--color-white);
+  color: var(--color-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+}
+
+.audio-toggle:hover {
+  background: var(--color-primary);
+  color: var(--color-white);
+  transform: scale(1.1);
+}
+
+.audio-icon {
+  width: 24px;
+  height: 24px;
+  opacity: 0;
+  position: absolute;
+  transition: opacity .25s ease;
+}
+
+.audio-icon.audio-on {
+  opacity: 1;
+}
+
+.audio-toggle.muted .audio-icon.audio-on {
+  opacity: 0;
+}
+
+.audio-toggle.muted .audio-icon.audio-off {
+  opacity: 1;
+}
+
+/* =====================================================================
+   1) SCHERMATA BUSTA
+===================================================================== */
+.envelope-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: url('../images/busta_lettera.jpg') center/cover no-repeat;
+  transition: opacity var(--transition-slow), visibility var(--transition-slow);
+}
+
+.envelope-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Video di apertura della busta */
+#openingVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .3s ease, visibility .3s ease;
+  z-index: 10;
+}
+
+#openingVideo.playing {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Overlay con nomi e pulsante */
+.envelope-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 40px;
+  padding-bottom: 80px;
+  z-index: 5;
+  transition: opacity .3s ease, visibility .3s ease;
+}
+
+.envelope-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.envelope-names {
+  font-family: var(--font-script);
+  font-size: 3rem;
+  color: var(--color-primary-dark);
+  text-align: center;
+  text-shadow: 0 2px 10px rgba(0,0,0,.1);
+}
+
+
+
+.open-button {
+  background: transparent;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary-dark);
+  padding: 14px 38px;
+  font-size: 1rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border-radius: 30px;
+  transition: background .3s ease, color .3s ease;
+}
+.open-button:hover {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+/* =====================================================================
+   2) SITO PRINCIPALE
+===================================================================== */
+.main-site {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.main-site.visible { opacity: 1; }
+
+.section {
+  min-height: 100vh;
+  width: 100%;
+  padding: 90px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  text-align: center;
+}
+
+/* ---- HERO ---- */
+.hero-section {
+  background: var(--img-hero-bg) center/cover no-repeat fixed;
+  color: var(--color-white);
+  justify-content: center;
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.55));
+}
+.hero-content { position: relative; z-index: 1; }
+
+.hero-kicker {
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  font-size: .95rem;
+  margin-bottom: 14px;
+  color: var(--color-cream);
+}
+.hero-names {
+  font-family: var(--font-script);
+  font-size: 5.5rem;
+  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--color-white);
+  text-shadow: 0 2px 20px rgba(0,0,0,.4);
+}
+.hero-date {
+  margin-top: 18px;
+  font-size: 1.5rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.countdown {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  margin-top: 50px;
+  /* margin-bottom: 30px; */
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.countdown-item {
+  min-width: 78px;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.4);
+  border-radius: 10px;
+  padding: 16px 10px;
+  backdrop-filter: blur(3px);
+}
+.countdown-number {
+  display: block;
+  font-family: var(--font-title);
+  font-size: 2.1rem;
+  font-weight: 600;
+}
+.countdown-label {
+  display: block;
+  font-size: .72rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 4px;
+  opacity: .9;
+}
+
+.scroll-hint {
+  margin-top: 60px;
+  font-size: 1.6rem;
+  animation: bounce 2s infinite;
+  opacity: .85;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(10px); }
+}
+
+/* ---- INVITO ---- */
+.invito-section { background: var(--color-cream); }
+
+.invito-grid {
+  max-width: var(--max-width);
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 50px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.invito-photo {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: var(--img-couple-photo) center/cover no-repeat, var(--color-cream-dark);
+  border-radius: 6px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.15);
+  border: 6px solid var(--color-white);
+}
+
+.invito-text {
+  text-align: left;
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: var(--color-text);
+}
+.invito-text p { margin-bottom: 18px; }
+.invito-signature {
+  font-family: var(--font-script);
+  font-size: 2rem;
+  color: var(--color-primary);
+  margin-top: 6px;
+}
+
+.glasses-icon {
+  margin-top: 20px;
+  text-align: center;
+}
+.calici-image {
+  max-width: 200px;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.1);
+}
+
+/* ---- DOVE E QUANDO ---- */
+.location-section { background: var(--color-cream-dark); }
+
+.location-illustration { max-width: 480px; width: 100%; margin-bottom: 10px; }
+.farmhouse-svg { width: 100%; height: auto; }
+
+.location-name {
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  color: var(--color-green-dark);
+  letter-spacing: 1px;
+  margin-top: 10px;
+}
+.location-date {
+  margin-top: 8px;
+  font-size: 1.15rem;
+  color: var(--color-text);
+}
+.location-address {
+  font-size: 1rem;
+  color: var(--color-text-light);
+  margin-top: 4px;
+  margin-bottom: 26px;
+}
+
+.map-wrapper {
+  width: 100%;
+  max-width: var(--max-width);
+  aspect-ratio: 16/9;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,.15);
+  border: 6px solid var(--color-white);
+  margin-bottom: 24px;
+}
+.map-frame { width: 100%; height: 100%; border: 0; }
+
+.btn-outline {
+  display: inline-block;
+  border: 1px solid var(--color-green-dark);
+  color: var(--color-green-dark);
+  text-decoration: none;
+  padding: 13px 34px;
+  border-radius: 30px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: .85rem;
+  transition: background .3s, color .3s;
+}
+.btn-outline:hover { background: var(--color-green-dark); color: var(--color-white); }
+
+/* ---- RSVP ---- */
+.rsvp-section { background: var(--color-cream); }
+.rsvp-subtitle {
+  font-family: var(--font-script);
+  font-size: 2.2rem;
+  color: var(--color-primary);
+  margin-top: -10px;
+}
+
+.letter-card {
+  max-width: 560px;
+  background: var(--color-white);
+  padding: 50px 40px;
+  border-radius: 4px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.12);
+  font-size: 1.2rem;
+  line-height: 1.9;
+  position: relative;
+}
+.letter-card::before {
+  content: '\2726';
+  position: absolute;
+  top: -14px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-white);
+  color: var(--color-primary);
+  padding: 0 10px;
+}
+
+.btn-solid {
+  margin-top: 30px;
+  display: inline-block;
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  padding: 15px 40px;
+  border-radius: 30px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: .88rem;
+  transition: background .3s;
+}
+.btn-solid:hover { background: var(--color-primary-dark); }
+
+.site-footer {
+  margin-top: 70px;
+  color: var(--color-text-light);
+  font-size: .9rem;
+  letter-spacing: 1px;
+}
+
+/* =====================================================================
+   3) MODALE FORM RSVP
+===================================================================== */
+.rsvp-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--color-cream);
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: opacity .45s ease, transform .45s ease, visibility .45s;
+}
+.rsvp-modal.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.rsvp-modal-inner {
+  max-width: 640px;
+  width: 100%;
+  position: relative;
+}
+
+.rsvp-close {
+  position: absolute;
+  top: -10px; right: 0;
+  background: none;
+  border: none;
+  font-size: 2.2rem;
+  line-height: 1;
+  color: var(--color-primary-dark);
+}
+
+.rsvp-modal-title {
+  text-align: center;
+  font-size: 1.9rem;
+  color: var(--color-primary-dark);
+  letter-spacing: 2px;
+}
+
+.rsvp-form { text-align: left; }
+
+.form-row { margin-bottom: 22px; }
+.form-row-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.rsvp-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: .95rem;
+  letter-spacing: .5px;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.rsvp-form input[type="text"],
+.rsvp-form input[type="number"],
+.rsvp-form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--color-cream-dark);
+  background: var(--color-white);
+  border-radius: 6px;
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  color: var(--color-text);
+}
+.rsvp-form input:focus,
+.rsvp-form textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.choice-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.choice-btn {
+  flex: 1 1 auto;
+  min-width: 140px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-primary);
+  background: var(--color-white);
+  color: var(--color-primary-dark);
+  border-radius: 30px;
+  font-size: .95rem;
+  transition: background .25s, color .25s;
+}
+.choice-btn.active {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.checkbox-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--color-cream-dark);
+  background: var(--color-white);
+  padding: 9px 14px;
+  border-radius: 20px;
+  font-size: .92rem;
+  cursor: pointer;
+}
+.checkbox-pill input { accent-color: var(--color-primary); }
+
+.form-feedback {
+  min-height: 24px;
+  font-size: .95rem;
+  margin-bottom: 10px;
+}
+.form-feedback.success { color: #3f6b3f; }
+.form-feedback.error { color: #a13a3a; }
+
+.btn-submit {
+  width: 100%;
+  border: none;
+}
+.btn-submit:disabled { opacity: .6; cursor: not-allowed; }
+
+/* =====================================================================
+   RESPONSIVE
+===================================================================== */
+@media (max-width: 720px) {
+  .invito-grid { grid-template-columns: 1fr; }
+  .hero-names { font-size: 4rem; }
+  .form-row-split { grid-template-columns: 1fr; }
+  .envelope-names { font-size: 2.2rem; }
+}
