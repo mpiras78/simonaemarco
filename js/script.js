@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Invio in corso...';
 
-    fetch('php/send_rsvp.php', {
+    fetch('http://www.musicall.it/marcoesimonasposi/send_rsvp.php', {
       method: 'POST',
       body: formData
     })
