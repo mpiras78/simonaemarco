@@ -1,8 +1,6 @@
 /* =====================================================================
    PARTECIPAZIONE DI NOZZE — Simona & Marco
-   Tutto lo stile e le immagini si gestiscono da qui.
-   Modifica le variabili in :root per cambiare colori, font e immagini
-   senza toccare l'HTML.
+   Versione Fluid & Responsive
 ===================================================================== */
 
 :root {
@@ -21,7 +19,7 @@
   --font-serif: 'Cormorant Garamond', serif;  /* testi */
   --font-title: 'Cinzel', serif;              /* titoli maiuscoli */
 
-  /* ---- IMMAGINI (sostituisci i percorsi con le tue foto) ---- */
+  /* ---- IMMAGINI ---- */
   --img-hero-bg: url('../images/sfondo_married.jpg');
   --img-couple-photo: url('../images/IMG_20251025_190413.jpeg');
 
@@ -35,13 +33,17 @@
 --------------------------------------------------------------------- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; }
+html { 
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
 
 body {
   font-family: var(--font-serif);
   color: var(--color-text);
   background: var(--color-cream);
   overflow-x: hidden;
+  line-height: 1.6;
 }
 
 h1, h2 { font-family: var(--font-title); font-weight: 600; letter-spacing: 2px; }
@@ -50,17 +52,17 @@ button { font-family: inherit; cursor: pointer; }
 
 .section-title {
   text-align: center;
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
   color: var(--color-primary-dark);
   text-transform: uppercase;
-  letter-spacing: 4px;
+  letter-spacing: 3px;
 }
 
 .divider {
   width: 70px;
   height: 2px;
   background: var(--color-primary);
-  margin: 18px auto 36px;
+  margin: 16px auto 30px;
   position: relative;
 }
 .divider::before {
@@ -87,17 +89,15 @@ button { font-family: inherit; cursor: pointer; }
 /* =====================================================================
    CONTROLLO AUDIO
 ===================================================================== */
-#bgMusic {
-  display: none;
-}
+#bgMusic { display: none; }
 
 .audio-toggle {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: 16px;
+  right: 16px;
   z-index: 1000;
-  width: 50px;
-  height: 50px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 2px solid var(--color-primary);
   background: var(--color-white);
@@ -113,28 +113,20 @@ button { font-family: inherit; cursor: pointer; }
 .audio-toggle:hover {
   background: var(--color-primary);
   color: var(--color-white);
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .audio-icon {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   opacity: 0;
   position: absolute;
   transition: opacity .25s ease;
 }
 
-.audio-icon.audio-on {
-  opacity: 1;
-}
-
-.audio-toggle.muted .audio-icon.audio-on {
-  opacity: 0;
-}
-
-.audio-toggle.muted .audio-icon.audio-off {
-  opacity: 1;
-}
+.audio-icon.audio-on { opacity: 1; }
+.audio-toggle.muted .audio-icon.audio-on { opacity: 0; }
+.audio-toggle.muted .audio-icon.audio-off { opacity: 1; }
 
 /* =====================================================================
    1) SCHERMATA BUSTA
@@ -153,7 +145,6 @@ button { font-family: inherit; cursor: pointer; }
   pointer-events: none;
 }
 
-/* Video di apertura della busta */
 #openingVideo {
   position: absolute;
   inset: 0;
@@ -171,7 +162,6 @@ button { font-family: inherit; cursor: pointer; }
   visibility: visible;
 }
 
-/* Overlay con nomi e pulsante */
 .envelope-overlay {
   position: absolute;
   inset: 0;
@@ -179,8 +169,8 @@ button { font-family: inherit; cursor: pointer; }
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  gap: 40px;
-  padding-bottom: 80px;
+  gap: 30px;
+  padding: 0 20px 60px;
   z-index: 5;
   transition: opacity .3s ease, visibility .3s ease;
 }
@@ -193,21 +183,20 @@ button { font-family: inherit; cursor: pointer; }
 
 .envelope-names {
   font-family: var(--font-script);
-  font-size: 3rem;
+  font-size: clamp(2.2rem, 8vw, 3.5rem);
   color: var(--color-primary-dark);
   text-align: center;
   text-shadow: 0 2px 10px rgba(0,0,0,.1);
 }
 
-
-
 .open-button {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
   border: 1px solid var(--color-primary);
   color: var(--color-primary-dark);
-  padding: 14px 38px;
-  font-size: 1rem;
-  letter-spacing: 3px;
+  padding: 12px 32px;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
   text-transform: uppercase;
   border-radius: 30px;
   transition: background .3s ease, color .3s ease;
@@ -228,8 +217,9 @@ button { font-family: inherit; cursor: pointer; }
 
 .section {
   min-height: 100vh;
+  min-height: 100dvh; /* Adattamento dinamico viewport mobile */
   width: 100%;
-  padding: 90px 24px;
+  padding: 60px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -242,163 +232,186 @@ button { font-family: inherit; cursor: pointer; }
 .hero-section {
   background: var(--img-hero-bg) center/cover no-repeat fixed;
   color: var(--color-white);
-  justify-content: center;
 }
+
+/* Per smartphone/tablet disattiva la modalità fixed di background che crea bug grafici su iOS */
+@media (hover: none) {
+  .hero-section { background-attachment: scroll; }
+}
+
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.55));
+  background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.6));
 }
-.hero-content { position: relative; z-index: 1; }
+.hero-content { 
+  position: relative; 
+  z-index: 1; 
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
 
 .hero-kicker {
   text-transform: uppercase;
-  letter-spacing: 6px;
-  font-size: .95rem;
-  margin-bottom: 14px;
+  letter-spacing: 4px;
+  font-size: clamp(0.75rem, 2vw, 0.95rem);
+  margin-bottom: 10px;
   color: var(--color-cream);
 }
 .hero-names {
   font-family: var(--font-script);
-  font-size: 5.5rem;
-  line-height: 1.5;
+  font-size: clamp(3.5rem, 10vw, 5.5rem);
+  line-height: 1.2;
   font-weight: 400;
   letter-spacing: 0;
   color: var(--color-white);
   text-shadow: 0 2px 20px rgba(0,0,0,.4);
 }
 .hero-date {
-  margin-top: 18px;
-  font-size: 1.5rem;
-  letter-spacing: 4px;
+  margin-top: 14px;
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  letter-spacing: 3px;
   text-transform: uppercase;
 }
 
 .countdown {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 22px;
-  margin-top: 50px;
-  /* margin-bottom: 30px; */
-  max-width: 360px;
-  margin-left: auto;
-  margin-right: auto;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 35px auto 0;
+  width: 100%;
+  max-width: 420px;
 }
 .countdown-item {
-  min-width: 78px;
-  background: rgba(255,255,255,.12);
-  border: 1px solid rgba(255,255,255,.4);
-  border-radius: 10px;
-  padding: 16px 10px;
-  backdrop-filter: blur(3px);
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 8px;
+  padding: 10px 4px;
+  backdrop-filter: blur(4px);
 }
 .countdown-number {
   display: block;
   font-family: var(--font-title);
-  font-size: 2.1rem;
+  font-size: clamp(1.3rem, 4vw, 2.1rem);
   font-weight: 600;
 }
 .countdown-label {
   display: block;
-  font-size: .72rem;
-  letter-spacing: 2px;
+  font-size: clamp(0.6rem, 1.5vw, 0.72rem);
+  letter-spacing: 1px;
   text-transform: uppercase;
-  margin-top: 4px;
+  margin-top: 2px;
   opacity: .9;
 }
 
 .scroll-hint {
-  margin-top: 60px;
-  font-size: 1.6rem;
+  margin-top: 40px;
+  font-size: 1.4rem;
   animation: bounce 2s infinite;
   opacity: .85;
 }
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(10px); }
+  50% { transform: translateY(8px); }
 }
 
 /* ---- INVITO ---- */
-.invito-section { background: var(--color-cream); }
+.invito-section { 
+  background: var(--color-cream); 
+  min-height: auto; 
+  padding: 80px 20px; 
+}
 
 .invito-grid {
+  width: 100%;
   max-width: var(--max-width);
   display: grid;
-  grid-template-columns: 1fr 1.3fr;
-  gap: 50px;
+  grid-template-columns: 1fr;
+  gap: 30px;
   align-items: center;
   margin-top: 10px;
 }
 
 .invito-photo {
   width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
   aspect-ratio: 4 / 5;
   background: var(--img-couple-photo) center/cover no-repeat, var(--color-cream-dark);
   border-radius: 6px;
-  box-shadow: 0 20px 40px rgba(0,0,0,.15);
-  border: 6px solid var(--color-white);
+  box-shadow: 0 15px 35px rgba(0,0,0,.1);
+  border: 5px solid var(--color-white);
 }
 
 .invito-text {
-  text-align: left;
-  font-size: 1.15rem;
-  line-height: 1.8;
+  text-align: center;
+  font-size: clamp(1rem, 2.5vw, 1.15rem);
+  line-height: 1.7;
   color: var(--color-text);
 }
-.invito-text p { margin-bottom: 18px; }
+.invito-text p { margin-bottom: 14px; }
 .invito-signature {
   font-family: var(--font-script);
-  font-size: 2rem;
+  font-size: clamp(1.8rem, 5vw, 2.4rem);
   color: var(--color-primary);
-  margin-top: 6px;
+  margin-top: 10px;
 }
 
 .glasses-icon {
-  margin-top: 20px;
+  margin-top: 15px;
   text-align: center;
 }
 .calici-image {
-  max-width: 200px;
+  max-width: 150px;
   width: 100%;
   height: auto;
   border-radius: 6px;
-  box-shadow: 0 10px 25px rgba(0,0,0,.1);
+  box-shadow: 0 8px 20px rgba(0,0,0,.08);
 }
 
 /* ---- DOVE E QUANDO ---- */
-.location-section { background: var(--color-cream-dark); }
+.location-section { 
+  background: var(--color-cream-dark); 
+  min-height: auto; 
+  padding: 80px 20px; 
+}
 
-.location-illustration { max-width: 480px; width: 100%; margin-bottom: 10px; }
+.location-illustration { 
+  max-width: 360px; 
+  width: 100%; 
+  margin-bottom: 10px; 
+}
 .farmhouse-svg { width: 100%; height: auto; }
 
 .location-name {
   font-family: var(--font-title);
-  font-size: 1.6rem;
+  font-size: clamp(1.2rem, 3.5vw, 1.6rem);
   color: var(--color-green-dark);
   letter-spacing: 1px;
   margin-top: 10px;
 }
 .location-date {
-  margin-top: 8px;
-  font-size: 1.15rem;
+  margin-top: 6px;
+  font-size: clamp(1rem, 2.5vw, 1.15rem);
   color: var(--color-text);
 }
 .location-address {
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2vw, 1rem);
   color: var(--color-text-light);
   margin-top: 4px;
-  margin-bottom: 26px;
+  margin-bottom: 20px;
 }
 
 .map-wrapper {
   width: 100%;
   max-width: var(--max-width);
-  aspect-ratio: 16/9;
+  height: 280px;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0,0,0,.15);
-  border: 6px solid var(--color-white);
-  margin-bottom: 24px;
+  box-shadow: 0 15px 35px rgba(0,0,0,.1);
+  border: 5px solid var(--color-white);
+  margin-bottom: 20px;
 }
 .map-frame { width: 100%; height: 100%; border: 0; }
 
@@ -407,32 +420,37 @@ button { font-family: inherit; cursor: pointer; }
   border: 1px solid var(--color-green-dark);
   color: var(--color-green-dark);
   text-decoration: none;
-  padding: 13px 34px;
+  padding: 12px 28px;
   border-radius: 30px;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  font-size: .85rem;
+  font-size: 0.8rem;
   transition: background .3s, color .3s;
 }
 .btn-outline:hover { background: var(--color-green-dark); color: var(--color-white); }
 
 /* ---- RSVP ---- */
-.rsvp-section { background: var(--color-cream); }
+.rsvp-section { 
+  background: var(--color-cream); 
+  min-height: auto; 
+  padding: 80px 20px 40px; 
+}
 .rsvp-subtitle {
   font-family: var(--font-script);
-  font-size: 2.2rem;
+  font-size: clamp(1.8rem, 4vw, 2.2rem);
   color: var(--color-primary);
-  margin-top: -10px;
+  margin-top: -6px;
 }
 
 .letter-card {
+  width: 100%;
   max-width: 560px;
   background: var(--color-white);
-  padding: 50px 40px;
+  padding: clamp(30px, 6vw, 50px) clamp(20px, 4vw, 40px);
   border-radius: 4px;
-  box-shadow: 0 20px 50px rgba(0,0,0,.12);
-  font-size: 1.2rem;
-  line-height: 1.9;
+  box-shadow: 0 15px 40px rgba(0,0,0,.08);
+  font-size: clamp(1rem, 2.5vw, 1.15rem);
+  line-height: 1.7;
   position: relative;
 }
 .letter-card::before {
@@ -446,24 +464,24 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 .btn-solid {
-  margin-top: 30px;
+  margin-top: 24px;
   display: inline-block;
   background: var(--color-primary);
   color: var(--color-white);
   border: none;
-  padding: 15px 40px;
+  padding: 14px 32px;
   border-radius: 30px;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  font-size: .88rem;
+  font-size: 0.82rem;
   transition: background .3s;
 }
 .btn-solid:hover { background: var(--color-primary-dark); }
 
 .site-footer {
-  margin-top: 70px;
+  margin-top: 50px;
   color: var(--color-text-light);
-  font-size: .9rem;
+  font-size: 0.85rem;
   letter-spacing: 1px;
 }
 
@@ -478,7 +496,8 @@ button { font-family: inherit; cursor: pointer; }
   overflow-y: auto;
   display: flex;
   justify-content: center;
-  padding: 60px 20px;
+  align-items: flex-start;
+  padding: 40px 16px;
   opacity: 0;
   visibility: hidden;
   transform: translateY(20px);
@@ -491,41 +510,43 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 .rsvp-modal-inner {
-  max-width: 640px;
+  max-width: 600px;
   width: 100%;
   position: relative;
+  margin: auto 0;
 }
 
 .rsvp-close {
   position: absolute;
-  top: -10px; right: 0;
+  top: -15px; right: 0;
   background: none;
   border: none;
   font-size: 2.2rem;
   line-height: 1;
   color: var(--color-primary-dark);
+  padding: 5px;
 }
 
 .rsvp-modal-title {
   text-align: center;
-  font-size: 1.9rem;
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
   color: var(--color-primary-dark);
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
 }
 
 .rsvp-form { text-align: left; }
 
-.form-row { margin-bottom: 22px; }
+.form-row { margin-bottom: 18px; }
 .form-row-split {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 16px;
 }
 
 .rsvp-form label {
   display: block;
-  margin-bottom: 8px;
-  font-size: .95rem;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
   letter-spacing: .5px;
   color: var(--color-text);
   font-weight: 600;
@@ -535,12 +556,12 @@ button { font-family: inherit; cursor: pointer; }
 .rsvp-form input[type="number"],
 .rsvp-form textarea {
   width: 100%;
-  padding: 12px 14px;
+  padding: 10px 12px;
   border: 1px solid var(--color-cream-dark);
   background: var(--color-white);
   border-radius: 6px;
   font-family: var(--font-serif);
-  font-size: 1.05rem;
+  font-size: 1rem;
   color: var(--color-text);
 }
 .rsvp-form input:focus,
@@ -551,18 +572,18 @@ button { font-family: inherit; cursor: pointer; }
 
 .choice-group {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 .choice-btn {
-  flex: 1 1 auto;
-  min-width: 140px;
-  padding: 12px 14px;
+  flex: 1 1 calc(33.333% - 8px);
+  min-width: 120px;
+  padding: 10px 8px;
   border: 1px solid var(--color-primary);
   background: var(--color-white);
   color: var(--color-primary-dark);
   border-radius: 30px;
-  font-size: .95rem;
+  font-size: 0.85rem;
   transition: background .25s, color .25s;
 }
 .choice-btn.active {
@@ -573,8 +594,8 @@ button { font-family: inherit; cursor: pointer; }
 .checkbox-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 .checkbox-pill {
   display: flex;
@@ -582,16 +603,16 @@ button { font-family: inherit; cursor: pointer; }
   gap: 6px;
   border: 1px solid var(--color-cream-dark);
   background: var(--color-white);
-  padding: 9px 14px;
+  padding: 7px 12px;
   border-radius: 20px;
-  font-size: .92rem;
+  font-size: 0.85rem;
   cursor: pointer;
 }
 .checkbox-pill input { accent-color: var(--color-primary); }
 
 .form-feedback {
-  min-height: 24px;
-  font-size: .95rem;
+  min-height: 20px;
+  font-size: 0.9rem;
   margin-bottom: 10px;
 }
 .form-feedback.success { color: #3f6b3f; }
@@ -600,15 +621,27 @@ button { font-family: inherit; cursor: pointer; }
 .btn-submit {
   width: 100%;
   border: none;
+  margin-top: 10px;
 }
 .btn-submit:disabled { opacity: .6; cursor: not-allowed; }
 
 /* =====================================================================
-   RESPONSIVE
+   MEDIA QUERIES (TABLET & DESKTOP DESK)
 ===================================================================== */
-@media (max-width: 720px) {
-  .invito-grid { grid-template-columns: 1fr; }
-  .hero-names { font-size: 4rem; }
+@media (min-width: 768px) {
+  .invito-grid {
+    grid-template-columns: 1fr 1.2fr;
+    gap: 40px;
+  }
+  
+  .invito-text { text-align: left; }
+  
+  .map-wrapper { height: 360px; }
+  
+  .choice-btn { flex: 1; }
+}
+
+@media (max-width: 480px) {
   .form-row-split { grid-template-columns: 1fr; }
-  .envelope-names { font-size: 2.2rem; }
+  .choice-btn { flex: 1 1 100%; }
 }

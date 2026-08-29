@@ -1,126 +1,115 @@
 <?php
 /**
  * send_rsvp.php
- * Riceve i dati del form di conferma presenza (RSVP) e invia una email
- * di notifica agli sposi. Risponde in JSON per l'AJAX del frontend.
- *
- * CONFIGURAZIONE: modifica solo le costanti qui sotto se necessario.
+ * Riceve i dati del form RSVP via AJAX, salva una copia locale in rsvp_log.txt
+ * e invia una notifica via email agli sposi usando la funzione mail().
  */
+
+ini_set('display_errors', '0');
+error_reporting(0);
 
 header('Content-Type: application/json; charset=utf-8');
 
 // ---------------------------------------------------------------
-// CONFIGURAZIONE
+// CONFIGURAZIONE INDIRIZZI E OGGETTO
 // ---------------------------------------------------------------
-const TO_EMAIL      = 'goemontero@gmail.com'; // indirizzo che riceve le conferme
+const TO_EMAIL      = 'goemontero@gmail.com, musicall@musicall.it, simor0523@gmail.com'; 
 const EMAIL_SUBJECT = 'Nuova conferma RSVP - Matrimonio Simona & Marco';
-const SPOSI_NAMES    = 'Simona & Marco';
+const SPOSI_NAMES   = 'Simona & Marco';
 
-// ---------------------------------------------------------------
-// UTILITY
-// ---------------------------------------------------------------
-
-function respond(bool $success, string $message): void
-{
-    echo json_encode(['success' => $success, 'message' => $message]);
+function respond($success, $message) {
+    echo json_encode(array('success' => $success, 'message' => $message), JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-function clean(string $value): string
-{
-    $value = trim($value);
-    $value = str_replace(["\r", "\n"], ' ', $value); // anti header-injection
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-}
-
-// ---------------------------------------------------------------
-// SOLO RICHIESTE POST
-// ---------------------------------------------------------------
+// Verifica che la richiesta sia inviata via POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     respond(false, 'Metodo non consentito.');
 }
 
 // ---------------------------------------------------------------
-// LETTURA E VALIDAZIONE CAMPI
+// LETTURA E PULIZIA DATI RICEVUTI
 // ---------------------------------------------------------------
-$fullname   = clean($_POST['fullname'] ?? '');
-$guests     = (int)($_POST['guests'] ?? 0);
-$children   = (int)($_POST['children'] ?? 0);
-$attendance = clean($_POST['attendance'] ?? '');
-$allergie   = clean($_POST['allergie'] ?? '');
-$message    = clean($_POST['message'] ?? '');
+$fullname   = isset($_POST['fullname']) ? trim(strip_tags($_POST['fullname'])) : '';
+$guests     = isset($_POST['guests']) ? (int)$_POST['guests'] : 0;
+$children   = isset($_POST['children']) ? (int)$_POST['children'] : 0;
+$attendance = isset($_POST['attendance']) ? trim(strip_tags($_POST['attendance'])) : '';
+$allergie   = isset($_POST['allergie']) ? trim(strip_tags($_POST['allergie'])) : '';
+$message    = isset($_POST['message']) ? trim(strip_tags($_POST['message'])) : '';
 
-// Restrizioni alimentari (checkbox multipli)
-$dietRaw = $_POST['diet'] ?? [];
-$dietLabels = [
-    'vegetariano'     => 'Vegetariano',
-    'vegano'          => 'Vegano',
-    'senza_glutine'   => 'Senza glutine',
-    'senza_lattosio'  => 'Senza lattosio',
-];
-$diet = [];
+// Gestione checkbox restrizioni alimentari
+$dietRaw = isset($_POST['diet']) ? $_POST['diet'] : array();
+$dietLabels = array(
+    'vegetariano'    => 'Vegetariano',
+    'vegano'         => 'Vegano',
+    'senza_glutine'  => 'Senza glutine',
+    'senza_lattosio' => 'Senza lattosio'
+);
+
+$diet = array();
 if (is_array($dietRaw)) {
     foreach ($dietRaw as $d) {
-        $d = clean($d);
         if (isset($dietLabels[$d])) {
             $diet[] = $dietLabels[$d];
         }
     }
 }
-$dietText = count($diet) > 0 ? implode(', ', $diet) : 'Nessuna';
+$dietText = !empty($diet) ? implode(', ', $diet) : 'Nessuna';
 
-$attendanceLabels = [
+$attendanceLabels = array(
     'partecipo'     => 'Partecipa',
     'non_partecipo' => 'Non partecipa',
-    'forse'         => 'Non può ancora confermare',
-];
-$attendanceText = $attendanceLabels[$attendance] ?? 'Non specificato';
+    'forse'         => 'Non può ancora confermare'
+);
+$attendanceText = isset($attendanceLabels[$attendance]) ? $attendanceLabels[$attendance] : 'Non specificato';
 
-// Validazione obbligatori
-if ($fullname === '') {
-    respond(false, 'Il nome e cognome sono obbligatori.');
+// ---------------------------------------------------------------
+// VALIDAZIONE CAMPI OBBLIGATORI
+// ---------------------------------------------------------------
+if (empty($fullname)) {
+    respond(false, 'Inserisci nome e cognome.');
 }
 if ($guests < 1) {
     respond(false, 'Indica in quante persone sarete.');
 }
-if (!array_key_exists($attendance, $attendanceLabels)) {
-    respond(false, 'Seleziona una risposta di partecipazione valida.');
-}
 
 // ---------------------------------------------------------------
-// COSTRUZIONE MESSAGGIO EMAIL
+// 1) SALVATAGGIO LOG LOCALE (DI SICUREZZA)
 // ---------------------------------------------------------------
-$body  = "Nuova conferma di partecipazione al matrimonio di " . SPOSI_NAMES . "\n";
-$body .= str_repeat('-', 50) . "\n\n";
-$body .= "Nome e Cognome: {$fullname}\n";
-$body .= "Numero totale ospiti: {$guests}\n";
-$body .= "Di cui bambini: {$children}\n";
-$body .= "Partecipazione: {$attendanceText}\n";
-$body .= "Restrizioni alimentari: {$dietText}\n";
-$body .= "Altre allergie/note: " . ($allergie !== '' ? $allergie : 'Nessuna') . "\n\n";
-$body .= "Messaggio per gli sposi:\n";
-$body .= ($message !== '' ? $message : '(nessun messaggio)') . "\n\n";
-$body .= str_repeat('-', 50) . "\n";
-$body .= 'Inviato il ' . date('d/m/Y H:i:s') . "\n";
+$logLine = date('Y-m-d H:i:s') . " | Nome: {$fullname} | Ospiti: {$guests} | Bambini: {$children} | Esito: {$attendanceText} | Diete: {$dietText} | Note: {$allergie} | Msg: {$message}" . PHP_EOL;
+@file_put_contents(__DIR__ . '/rsvp_log.txt', $logLine, FILE_APPEND | LOCK_EX);
 
 // ---------------------------------------------------------------
-// INVIO EMAIL
+// 2) COSTRUZIONE CONTENUTO EMAIL ED HEADER
 // ---------------------------------------------------------------
-$headers   = [];
-$headers[] = 'MIME-Version: 1.0';
-$headers[] = 'Content-Type: text/plain; charset=UTF-8';
-$headers[] = 'From: Sito Matrimonio <noreply@' . ($_SERVER['SERVER_NAME'] ?? 'localhost') . '>';
+$email_content  = "Nuova conferma di partecipazione al matrimonio di " . SPOSI_NAMES . "\n";
+$email_content .= "--------------------------------------------------\n\n";
+$email_content .= "Nome e Cognome: $fullname\n";
+$email_content .= "Numero totale ospiti: $guests\n";
+$email_content .= "Di cui bambini: $children\n";
+$email_content .= "Partecipazione: $attendanceText\n";
+$email_content .= "Restrizioni alimentari: $dietText\n";
+$email_content .= "Altre allergie o intolleranze: " . (!empty($allergie) ? $allergie : 'Nessuna') . "\n\n";
+$email_content .= "Messaggio per gli sposi:\n";
+$email_content .= (!empty($message) ? $message : '(nessun messaggio)') . "\n\n";
+$email_content .= "--------------------------------------------------\n";
+$email_content .= "Inviato il " . date('d/m/Y H:i:s') . "\n";
 
-$subjectEncoded = '=?UTF-8?B?' . base64_encode(EMAIL_SUBJECT) . '?=';
+// Definizione Header (Simile alla struttura utilizzata nel tuo precedente progetto)
+$from_email = 'noreply@' . ($_SERVER['SERVER_NAME'] !== 'localhost' ? $_SERVER['SERVER_NAME'] : 'matrimonio.it');
+$headers  = "From: $from_email\r\n";
+$headers .= "Reply-To: $from_email\r\n";
+$headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
 
-$sent = @mail(TO_EMAIL, $subjectEncoded, $body, implode("\r\n", $headers));
+// ---------------------------------------------------------------
+// 3) INVIO MAIL TRAMITE API NATIVA mail()
+// ---------------------------------------------------------------
+$mail_sent = @mail(TO_EMAIL, EMAIL_SUBJECT, $email_content, $headers);
 
-if ($sent) {
+// Restituisce sempre esito positivo al client se i dati sono stati registrati
+if ($mail_sent) {
     respond(true, 'Grazie ' . $fullname . '! La tua conferma è stata inviata con successo.');
 } else {
-    // Fallback: salva comunque la richiesta su file locale così non si perde nulla
-    $logLine = date('Y-m-d H:i:s') . " | {$fullname} | {$guests} ospiti | {$children} bambini | {$attendanceText} | Diete: {$dietText} | Allergie: {$allergie} | Messaggio: {$message}" . PHP_EOL;
-    @file_put_contents(__DIR__ . '/rsvp_log.txt', $logLine, FILE_APPEND | LOCK_EX);
-
-    respond(true, 'Grazie ' . $fullname . '! La tua conferma è stata registrata.');
+    // In ambiente locale (MAMP/XAMPP) la mail fallirà, ma risponderà comunque OK grazie al log salvato
+    respond(true, 'Grazie ' . $fullname . '! La tua conferma è stata registrata con successo.');
 }
